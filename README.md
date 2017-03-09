@@ -4,7 +4,11 @@
 
 This code will solve the simplest first order, ordinary differential equations using the Euler method.
 
-Note: Issue exists where the function as a product of x and y i.e. f'(x)=xy
+Note: derivates must be input using \* as a multiplication operator between variables, i.e. x\*y
+
+However * is not necessary for multiplication by a constant i.e. 2x.
+
+This is due to the way math.js handles functions.
 
 ## Libraries and frameworks
 - vue.js 2.2.2

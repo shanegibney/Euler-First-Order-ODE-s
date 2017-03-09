@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>Euler Method</title>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.1/vue.min.js"></script> -->
-    <script src="https://unpkg.com/vue"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
+    <!-- <script src="https://unpkg.com/vue"></script> -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.10.0/math.min.js">
     </script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -52,7 +52,7 @@
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    <strong>Derivative:</strong><br> f'(x,y) = <input v-model="equation">
+                    <strong>Derivative:</strong> (e.g. y^2-x*y)<br> f'(x,y) = <input v-model="equation">
                 </div>
                 <div class="col-md-3 form-group">
                     <strong>Initial values:</strong><br>x<sub>0</sub> = <input v-model="xinit"><br>y<sub>0</sub> = <input v-model="yinit">
@@ -70,6 +70,9 @@
                     <button class="btn btn-primary btn-lg" v-on:click="total">Calculate & Graph</button>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <p>{{ evaluated }}</p>
         </div>
         <div class="row">
             <div class="col-md-3">
@@ -102,20 +105,19 @@
                 'equation': '2x',
                 'xinit': '0',
                 'yinit': '0',
-                'evaluated': '',
+                'evaluated': '7',
                 'step': '0.1',
                 'seen': false,
-                'iterations': '100',
+                'iterations': '10',
                 items: []
             },
             methods: {
                 total: function() {
                     this.items = [];
-                    var f = math.eval('f(x,y) = ' + this.equation);
+                    var f = math.eval('f(x,y)=' + this.equation);
                     this.evaluated = f(this.xinit, this.yinit);
                     while (this.items.length < this.iterations) {
                         if (this.items.length == 0) {
-                            // console.log("first up");
                             this.items.push({
                                 'val': this.items.length,
                                 'xn': this.xinit,
@@ -124,14 +126,13 @@
                         } else {
                             this.items.push({
                                 'val': this.items.length,
-                                // 'xn': this.xinit + (this.step * this.items.length)//weird values!!!
                                 'xn': parseFloat(this.items[this.items.length - 1].xn) + parseFloat(this.step),
                                 'yn': parseFloat(this.items[this.items.length - 1].yn) + parseFloat(this.step) * parseFloat(f(this.items[this.items.length - 1].xn, this.items[this.items.length - 1].yn))
                             });
                         }
                     }
                     this.seen = true;
-                    ///////////// d3.js library graphing code
+                    // d3.js library graphing code
                     // Set the dimensions of the canvas / graph
                     var margin = {
                             top: 30,
