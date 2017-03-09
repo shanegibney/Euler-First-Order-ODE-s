@@ -5,3 +5,8 @@ table {
 th {
     text-align: center;;
   }
+
+.codeButton{
+  text-align: right;
+  vertical-align: bottom;
+}

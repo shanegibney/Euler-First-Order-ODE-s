@@ -12,7 +12,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style media="screen">
         path {
             stroke: steelblue;
@@ -33,13 +33,15 @@
 <body>
     <div id="app" class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
-                <a class="btn btn-info" href="https://github.com/shanegibney/Euler-First-Order-ODE-s" role="button">Back to the Code</a>
+            <div class="col-md-9">
                 <h2>{{ message }}</h2>
+            </div>
+            <div class="col-md-3 codeButton">
+                <a class="btn btn-info" href="https://github.com/shanegibney/Euler-First-Order-ODE-s" role="button">Back to the Code</a>
             </div>
         </div>
         <div class="row jumbotron">
-            <div class="row">
+            <div class="row well">
                 <div class="col-md-3">
                     <h4>x<sub>n+1</sub> = x<sub>n</sub> + h</h4>
                 </div>
@@ -50,18 +52,18 @@
             <div class="row">
                 <p></p>
             </div>
-            <div class="row">
+            <div class="row well">
                 <div class="col-md-3">
-                    <strong>Derivative:</strong> (e.g. y^2-x*y)<br> f'(x,y) = <input v-model="equation">
+                    <label>Derivative:</label> (e.g. y^2-x*y)<br> f'(x,y) = <input v-model="equation">
                 </div>
                 <div class="col-md-3 form-group">
-                    <strong>Initial values:</strong><br>x<sub>0</sub> = <input v-model="xinit"><br>y<sub>0</sub> = <input v-model="yinit">
+                    <label>Initial values:</label><br>x<sub>0</sub> = <input v-model="xinit"><br>y<sub>0</sub> = <input v-model="yinit">
                 </div>
                 <div class="col-md-3">
-                    <strong>Step size:</strong><br> h = <input v-model="step">
+                    <label>Step size:</label><br> h = <input v-model="step">
                 </div>
                 <div class="col-md-3">
-                    <strong>Iterations:</strong><br>
+                    <label>Iterations:</label><br>
                     <input v-model="iterations">
                 </div>
             </div>
@@ -72,13 +74,10 @@
             </div>
         </div>
         <div class="row">
-            <p>{{ evaluated }}</p>
-        </div>
-        <div class="row">
             <div class="col-md-3">
-                <table class="table table-condensed" v-if="seen">
+                <table class="table table-striped" v-if="seen">
                     <thead>
-                        <th>Iteration</th>
+                        <th>n</th>
                         <th>x<sub>n</sub></th>
                         <th>y<sub>n</sub></th>
                     </thead>
@@ -101,7 +100,7 @@
         var vm = new Vue({
             el: '#app',
             data: {
-                'message': 'Euler Method for first order ODE',
+                'message': 'Euler Method for first order ODE\'s',
                 'equation': '2x',
                 'xinit': '0',
                 'yinit': '0',
