@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Euler Method</title>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.1/vue.min.js"></script> -->
+    <script src="https://unpkg.com/vue"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.10.0/math.min.js">
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <p>{{ message }}</p>
+        <table>
+            <tr>
+                <td>Derivative:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>f'(x,y) = </td>
+                <td><input v-model="equation"></td>
+            </tr>
+            <tr>
+                <td>Initial values:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>x<sub>0</sub> = </td>
+                <td><input v-model="xinit"></td>
+            </tr>
+            <tr>
+                <td>y<sub>0</sub> = </td>
+                <td><input v-model="yinit"></td>
+            </tr>
+            <tr>
+                <td>Step size:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>h = </td>
+                <td><input v-model="step"></td>
+            </tr>
+            <tr>
+                <td>Iterations = </td>
+                <td><input v-model="iterations"></td>
+            </tr>
+            <tr>
+                <td><button v-on:click="total">Calculate</button></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <table>
+            <thead>
+                <th style="border-bottom: 1px solid #black;">iteration</th>
+                <th>x<sub>n</sub></th>
+                <th>y<sub>n</sub></th>
+            </thead>
+            <tbody>
+                <tr v-for="item in items">
+                    <td>{{ item.val }}</td>
+                    <td>{{ item.xn }}</td>
+                    <td>{{ item.yn }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                'message': 'Euler method for first order ODE',
+                'equation': '2x',
+                'xinit': '0',
+                'yinit': '0',
+                'evaluated': '',
+                'step': '0.1',
+                'seen': false,
+                'iterations': '100',
+                items: []
+            },
+            methods: {
+                total: function() {
+                    this.items = [];
+                    var f = math.eval('f(x,y) = ' + this.equation);
+                    this.evaluated = f(this.xinit, this.yinit);
+                    while (this.items.length < this.iterations) {
+                        if (this.items.length == 0) {
+                            // console.log("first up");
+                            this.items.push({
+                                'val': this.items.length,
+                                'xn': this.xinit,
+                                'yn': this.yinit
+                            })
+                        } else {
+                            this.items.push({
+                                'val': this.items.length,
+                                // 'xn': this.xinit + (this.step * this.items.length)//weird values!!!
+                                'xn': parseFloat(this.items[this.items.length - 1].xn) + parseFloat(this.step),
+                                'yn': parseFloat(this.items[this.items.length - 1].yn) + parseFloat(this.step) * parseFloat(f(this.items[this.items.length - 1].xn, this.items[this.items.length - 1].yn))
+                            });
+                        }
+                    }
+                    this.seen = true;
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>
