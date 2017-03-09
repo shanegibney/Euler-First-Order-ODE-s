@@ -1,11 +1,7 @@
 table {
     text-align: center;
 }
-/*
-th {
-    border-bottom: 1px solid #black;
-  }
 
-td {
-  border-left: 1px solid #black;
-}*/
+th {
+    text-align: center;;
+  }

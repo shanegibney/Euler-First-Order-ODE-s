@@ -8,72 +8,98 @@
     <script src="https://unpkg.com/vue"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.10.0/math.min.js">
     </script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css">
+    <style media="screen">
+        path {
+            stroke: steelblue;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+    </style>
 </head>
 
 <body>
-    <a href="https://github.com/shanegibney/Euler-First-Order-ODE-s">Return to repo.</a>
-    <div id="app">
-        <p>{{ message }}</p>
-        <table>
-            <tr>
-                <td>Derivative:</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>f'(x,y) = </td>
-                <td><input v-model="equation"></td>
-            </tr>
-            <tr>
-                <td>Initial values:</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>x<sub>0</sub> = </td>
-                <td><input v-model="xinit"></td>
-            </tr>
-            <tr>
-                <td>y<sub>0</sub> = </td>
-                <td><input v-model="yinit"></td>
-            </tr>
-            <tr>
-                <td>Step size:</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>h = </td>
-                <td><input v-model="step"></td>
-            </tr>
-            <tr>
-                <td>Iterations = </td>
-                <td><input v-model="iterations"></td>
-            </tr>
-            <tr>
-                <td><button v-on:click="total">Calculate</button></td>
-                <td></td>
-            </tr>
-        </table>
+    <div id="app" class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <a class="btn btn-info" href="https://github.com/shanegibney/Euler-First-Order-ODE-s" role="button">Back to the Code</a>
+                <h2>{{ message }}</h2>
+            </div>
+        </div>
+        <div class="row jumbotron">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>x<sub>n+1</sub> = x<sub>n</sub> + h</h4>
+                </div>
+                <div class="col-md-3">
+                    <h4>y<sub>n+1</sub> = y<sub>n</sub> + h.f(x<sub>n</sub>,y<sub>n</sub>)</h4>
+                </div>
+            </div>
+            <div class="row">
+                <p></p>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Derivative:</strong><br> f'(x,y) = <input v-model="equation">
+                </div>
+                <div class="col-md-3 form-group">
+                    <strong>Initial values:</strong><br>x<sub>0</sub> = <input v-model="xinit"><br>y<sub>0</sub> = <input v-model="yinit">
+                </div>
+                <div class="col-md-3">
+                    <strong>Step size:</strong><br> h = <input v-model="step">
+                </div>
+                <div class="col-md-3">
+                    <strong>Iterations:</strong><br>
+                    <input v-model="iterations">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="text-align: center;">
+                    <button class="btn btn-primary btn-lg" v-on:click="total">Calculate & Graph</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <table class="table table-condensed" v-if="seen">
+                    <thead>
+                        <th>Iteration</th>
+                        <th>x<sub>n</sub></th>
+                        <th>y<sub>n</sub></th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in items">
+                            <td>{{ item.val }}</td>
+                            <td>{{ item.xn }}</td>
+                            <td>{{ item.yn }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-1">
 
-        <table>
-            <thead>
-                <th style="border-bottom: 1px solid #black;">iteration</th>
-                <th>x<sub>n</sub></th>
-                <th>y<sub>n</sub></th>
-            </thead>
-            <tbody>
-                <tr v-for="item in items">
-                    <td>{{ item.val }}</td>
-                    <td>{{ item.xn }}</td>
-                    <td>{{ item.yn }}</td>
-                </tr>
-            </tbody>
-        </table>
+            </div>
+            <div class="col-md-8" id="graph">
+            </div>
+        </div>
     </div>
     <script>
         var vm = new Vue({
             el: '#app',
             data: {
-                'message': 'Euler method for first order ODE',
+                'message': 'Euler Method for first order ODE',
                 'equation': '2x',
                 'xinit': '0',
                 'yinit': '0',
@@ -106,6 +132,85 @@
                         }
                     }
                     this.seen = true;
+                    ///////////// d3.js library graphing code
+                    // Set the dimensions of the canvas / graph
+                    var margin = {
+                            top: 30,
+                            right: 20,
+                            bottom: 30,
+                            left: 50
+                        },
+                        width = 600 - margin.left - margin.right,
+                        height = 450 - margin.top - margin.bottom;
+
+                    // Parse the date / time
+                    // var parseDate = d3.time.format("%d-%b-%y").parse;
+
+                    // Set the ranges
+                    // var x = d3.time.scale().range([0, width]);
+                    var x = d3.scale.linear().range([0, width]);
+                    var y = d3.scale.linear().range([height, 0]);
+
+                    // Define the axes
+                    var xAxis = d3.svg.axis().scale(x)
+                        .orient("bottom").ticks(5);
+
+                    var yAxis = d3.svg.axis().scale(y)
+                        .orient("left").ticks(5);
+
+                    // Define the line
+                    var valueline = d3.svg.line()
+                        .x(function(d) {
+                            return x(d.xn);
+                        })
+                        .y(function(d) {
+                            return y(d.yn);
+                        });
+
+                    // Adds the svg canvas
+                    d3.select("#graph").selectAll("svg").remove();
+                    var svg = d3.select("#graph")
+                        .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform",
+                            "translate(" + margin.left + "," + margin.top + ")");
+
+                    // Get the data
+                    // d3.json(this.items, function(error, data) {
+                    data = this.items;
+                    data.forEach(function(d) {
+                        // d.xn = parseDate(d.xn);
+                        d.xn = +d.xn;
+                        d.yn = +d.yn;
+                    });
+
+                    // Scale the range of the data
+                    x.domain(d3.extent(data, function(d) {
+                        return d.xn;
+                    }));
+                    y.domain([0, d3.max(data, function(d) {
+                        return d.yn;
+                    })]);
+
+                    // Add the valueline path.
+                    svg.append("path")
+                        .attr("class", "line")
+                        .attr("d", valueline(data));
+
+                    // Add the X Axis
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+
+                    // Add the Y Axis
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis);
+
+                    // });
                 },
             }
         })
